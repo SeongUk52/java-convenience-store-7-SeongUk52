@@ -1,0 +1,17 @@
+package store.repository;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.List;
+import store.infrastructure.DataParser;
+import store.infrastructure.FileUtils;
+import store.model.Product;
+import store.model.Promotion;
+
+public class FilePromotionRepository implements PromotionRepository {
+    private final List<Promotion> promotions;
+
+    public FilePromotionRepository(String filePath, DataParser<Promotion> dataParser) throws IOException, URISyntaxException {
+        promotions = FileUtils.loadFromFile(filePath, dataParser);
+    }
+}
