@@ -14,14 +14,8 @@ import java.io.FileNotFoundException;
 public class FileUtils {
     public static <T> List<T> loadFromFile(String filePath, DataParser<T> parser) throws IOException, URISyntaxException {
         List<T> items = new ArrayList<>();
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        URL resource = classLoader.getResource(filePath);
 
-        if (resource == null) {
-            throw new FileNotFoundException("파일을 찾을 수 없습니다: " + filePath);
-        }
-
-        Path path = Paths.get(resource.toURI());
+        Path path = urlToUri(filePath);
 
         List<String> lines = Files.readAllLines(path);
 
@@ -36,9 +30,8 @@ public class FileUtils {
 
     public static <T> void saveToFile(
             String filePath,
-            List<T> items,
-            Function<T, String> formatter
-    ) throws IOException {
+            List<T> items
+    ) throws IOException, URISyntaxException {
         List<String> lines = new ArrayList<>();
         Path path = Paths.get(filePath);
         List<String> fileLines = Files.readAllLines(path);
@@ -48,9 +41,20 @@ public class FileUtils {
         }
 
         lines.addAll(items.stream()
-                .map(formatter)
+                .map(Object::toString)
                 .toList());
 
         Files.write(path, lines);
+    }
+
+    private static Path urlToUri(String filePath) throws FileNotFoundException, URISyntaxException {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        URL resource = classLoader.getResource(filePath);
+
+        if (resource == null) {
+            throw new FileNotFoundException("파일을 찾을 수 없습니다: " + filePath);
+        }
+
+        return Paths.get(resource.toURI());
     }
 }

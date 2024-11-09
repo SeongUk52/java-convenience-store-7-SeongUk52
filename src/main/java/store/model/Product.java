@@ -16,4 +16,17 @@ public class Product {
     public boolean isNameEqualTo(String name) {
         return this.name.equals(name);
     }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    @Override
+    public String toString() {
+        String promotionString = "null";
+        if (promotion != null) {
+            promotionString = promotion;
+        }
+        return name + "," + price + "," + quantity + "," + promotionString;
+    }
 }

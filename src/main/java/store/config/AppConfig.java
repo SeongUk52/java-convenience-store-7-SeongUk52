@@ -11,7 +11,7 @@ import store.repository.ProductRepository;
 public class AppConfig {
     private static final AppConfig instance = new AppConfig();
     DataParser<Product> productCsvDataParser = new ProductCsvDataParser();
-    ProductRepository productRepository;
+    FileProductRepository productRepository;
 
     private AppConfig() {
         try {
@@ -25,7 +25,7 @@ public class AppConfig {
         return instance;
     }
 
-    public DataParser<Product> getProductCsvDataParser() {
-        return productCsvDataParser;
+    public FileProductRepository getProductRepository() {
+        return productRepository;
     }
 }

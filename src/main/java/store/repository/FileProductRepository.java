@@ -20,4 +20,8 @@ public class FileProductRepository implements ProductRepository {
                 .filter(product -> product.isNameEqualTo(name))
                 .toList();
     }
+
+    public void saveToFile(String filePath) throws IOException, URISyntaxException {
+        FileUtils.saveToFile(filePath, products);
+    }
 }
