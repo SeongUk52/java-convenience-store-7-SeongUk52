@@ -1,5 +1,7 @@
 package store.model;
 
+import java.util.Objects;
+
 public class Product {
     private String name;
     private int price;
@@ -25,14 +27,14 @@ public class Product {
 
     @Override
     public String toString() {
-        String promotionString = "null";
-        if (promotion != null) {
-            promotionString = promotion;
-        }
-        return name + "," + price + "," + quantity + "," + promotionString;
+        return name + "," + price + "," + quantity + "," + null;
     }
 
     public String getPromotion() {
         return promotion;
+    }
+
+    public boolean hasPromotion() {
+        return !Objects.equals(promotion, "null");
     }
 }

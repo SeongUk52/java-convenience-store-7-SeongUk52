@@ -21,8 +21,7 @@ public class Promotion {
         return this.name.equals(name);
     }
 
-    public boolean isValid() {
-        LocalDate currentDate = LocalDate.now();
+    public boolean isValid(LocalDate currentDate) {
         return !currentDate.isBefore(startDate) && !currentDate.isAfter(endDate);
     }
 }

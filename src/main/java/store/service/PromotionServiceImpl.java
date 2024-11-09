@@ -1,19 +1,20 @@
 package store.service;
 
+import java.time.LocalDate;
 import store.model.Product;
 import store.model.Promotion;
 import store.repository.PromotionRepository;
 
 public class PromotionServiceImpl implements PromotionService {
-    private PromotionRepository promotionRepository;
+    private final PromotionRepository promotionRepository;
 
     public PromotionServiceImpl(PromotionRepository promotionRepository) {
         this.promotionRepository = promotionRepository;
     }
 
     @Override
-    public boolean isPromotionActiveForProduct(Product product) {
+    public boolean isPromotionActiveForProduct(Product product, LocalDate currentDate) {
         Promotion promotion = promotionRepository.findByName(product.getPromotion());
-        return promotion.isValid();
+        return promotion.isValid(currentDate);
     }
 }

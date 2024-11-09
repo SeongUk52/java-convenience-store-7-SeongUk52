@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import store.infrastructure.DataParser;
@@ -27,6 +28,9 @@ class PromotionServiceImplTest {
 
         Product product = new Product("탄산수", 1000, 10, "탄산2+1");
 
-        assertTrue(promotionService.isPromotionActiveForProduct(product));
+        assertTrue(promotionService.isPromotionActiveForProduct(
+                product,
+                LocalDate.of(2024, 11, 10)
+        ));
     }
 }
