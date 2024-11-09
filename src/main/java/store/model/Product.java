@@ -13,12 +13,14 @@ public class Product {
         this.promotion = promotion;
     }
 
-    public boolean isNameEqualTo(String name) {
-        return this.name.equals(name);
+    public int purchase(int quantityToBuy) {
+        int availableQuantity = Math.min(quantityToBuy, quantity);
+        quantity -= availableQuantity;
+        return quantityToBuy - availableQuantity;
     }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+    public boolean isNameEqualTo(String name) {
+        return this.name.equals(name);
     }
 
     @Override
@@ -28,5 +30,9 @@ public class Product {
             promotionString = promotion;
         }
         return name + "," + price + "," + quantity + "," + promotionString;
+    }
+
+    public String getPromotion() {
+        return promotion;
     }
 }

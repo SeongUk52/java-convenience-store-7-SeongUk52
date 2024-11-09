@@ -11,6 +11,8 @@ import store.repository.FileProductRepository;
 import store.repository.FilePromotionRepository;
 import store.repository.ProductRepository;
 import store.repository.PromotionRepository;
+import store.service.PromotionService;
+import store.service.PromotionServiceImpl;
 
 public class AppConfig {
     private static final AppConfig instance = new AppConfig();
@@ -18,6 +20,7 @@ public class AppConfig {
     DataParser<Promotion> promotionDataParser = new PromotionCsvDataParser();
     FileProductRepository productRepository;
     PromotionRepository promotionRepository;
+    PromotionService promotionService = new PromotionServiceImpl(promotionRepository);
 
     private AppConfig() {
         try {
