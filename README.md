@@ -5,7 +5,8 @@
 
 ## 재고
 - [x] 각 상품의 수량을 저장한다.
-- [ ] src/main/resources/products.md의 파일 내용을 읽어온다.
+- [x] src/main/resources/products.md의 파일 내용을 읽어온다.
+- [ ] src/main/resources/products.md에 저장된 내용을 기록한다.
 - [ ] 고객이 상품을 구매할 때마다, 결제된 수량만큼 재고에서 차감한다.
 - [ ] 프로모션 재고는 프로모션 대상일 경우 우선 차감하며 부족할 경우 일반 재고를 사용하는데
 일반 재고는 프로모션 혜택이 적용되지 않는다.

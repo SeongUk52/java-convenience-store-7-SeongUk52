@@ -12,4 +12,8 @@ public class Product {
         this.quantity = quantity;
         this.promotion = promotion;
     }
+
+    public boolean isNameEqualTo(String name) {
+        return this.name.equals(name);
+    }
 }
