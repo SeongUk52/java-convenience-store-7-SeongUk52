@@ -15,7 +15,7 @@ public class AppConfig {
 
     private AppConfig() {
         try {
-            productRepository = new FileProductRepository("products.md");
+            productRepository = new FileProductRepository("products.md", productCsvDataParser);
         } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);
         }

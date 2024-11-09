@@ -21,10 +21,9 @@ public class FileUtils {
             throw new FileNotFoundException("파일을 찾을 수 없습니다: " + filePath);
         }
 
-
         Path path = Paths.get(resource.toURI());
 
-        List<String> lines = Files.readAllLines(Paths.get(filePath));
+        List<String> lines = Files.readAllLines(path);
 
         lines.stream()
                 .skip(1)
