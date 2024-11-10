@@ -129,12 +129,22 @@ public class ProductServiceImpl implements ProductService {
 
     private PriceDetails purchaseProduct(String name, int amount, boolean isMembership) {
         Map<Boolean, List<Product>> partitionedProducts = partitionProductsByPromotion(name);
-        int promotionConsumption = calculatePromotionConsumption(partitionedProducts.get(true), amount);
-        int regularConsumption = calculateRegularConsumption(
-                partitionedProducts.get(false), amount - promotionConsumption);
+        int promotionConsumption = 0;
+        int regularConsumption;
+
+        if (!partitionedProducts.get(true).isEmpty()) {
+            promotionConsumption = calculatePromotionConsumption(partitionedProducts.get(true), amount);
+        }
+        regularConsumption = calculateRegularConsumption(partitionedProducts.get(false), amount - promotionConsumption);
+
         int price = getPriceFromName(name);
         PurchaseSummary purchaseSummary = new PurchaseSummary(promotionConsumption, regularConsumption, price);
-        Promotion promotion = promotionService.findPromotion(partitionedProducts.get(true).get(0).getPromotion());
+
+        Promotion promotion = null;
+        if (!partitionedProducts.get(true).isEmpty()) {
+            promotion = promotionService.findPromotion(partitionedProducts.get(true).get(0).getPromotion());
+        }
+
         return priceCalculatorService.calculatePrice(purchaseSummary, promotion, isMembership);
     }
 

@@ -10,18 +10,27 @@ public class PriceCalculatorServiceImpl implements PriceCalculatorService {
     public PriceDetails calculatePrice(PurchaseSummary purchaseSummary, Promotion promotion, boolean isMembership) {
         int membershipDiscount = 0;
         int totalPrice = calculateTotalPrice(purchaseSummary);
-        PromotionBenefit promotionBenefit = promotion.getBenefit(purchaseSummary.promotionConsumption());
-        int promotionDiscount = calculatePromotionDiscount(purchaseSummary, promotionBenefit);
+
+        PromotionBenefit promotionBenefit = null;
+        int promotionDiscount = 0;
+
+        if (promotion != null) {
+            promotionBenefit = promotion.getBenefit(purchaseSummary.promotionConsumption());
+            promotionDiscount = calculatePromotionDiscount(purchaseSummary, promotionBenefit);
+        }
+
         if (isMembership) {
             membershipDiscount = calculateMembershipDiscount(purchaseSummary, promotionBenefit);
         }
+
         int finalPrice = totalPrice - promotionDiscount - membershipDiscount;
+
         return new PriceDetails(
                 totalPrice,
                 promotionDiscount,
                 membershipDiscount,
                 finalPrice,
-                promotionBenefit.eligibleItems(),
+                (promotionBenefit != null ? promotionBenefit.eligibleItems() : 0),
                 purchaseSummary.regularConsumption() + purchaseSummary.promotionConsumption()
         );
     }
