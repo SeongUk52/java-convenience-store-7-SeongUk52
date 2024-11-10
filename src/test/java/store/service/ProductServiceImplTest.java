@@ -44,7 +44,7 @@ class ProductServiceImplTest {
 
     @Test
     void purchaseProducts() {
-        productService.purchaseProducts(ProductParser.parse("[콜라-3]"));
+        productService.purchaseProducts(ProductParser.parse("[콜라-3]"), true);
 
         assertEquals(
                 7,

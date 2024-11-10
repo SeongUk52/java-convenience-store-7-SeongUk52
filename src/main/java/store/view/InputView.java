@@ -19,4 +19,9 @@ public class InputView {
                 productName, amount);
         return Console.readLine().equalsIgnoreCase("Y");
     }
+
+    public boolean isMembership() {
+        System.out.println("멤버십 할인을 받으시겠습니까? (Y/N)");
+        return Console.readLine().equalsIgnoreCase("Y");
+    }
 }

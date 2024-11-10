@@ -29,8 +29,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void purchaseProducts(Map<String, Integer> products) {
-        products.forEach(this::purchaseProduct);
+    public void purchaseProducts(Map<String, Integer> products, boolean isMembership) {
+        products.forEach((name, amount) -> purchaseProduct(name, amount, isMembership));
     }
 
     @Override
@@ -123,7 +123,7 @@ public class ProductServiceImpl implements ProductService {
         return products.stream().noneMatch(product -> !product.hasPromotion() && product.getQuantity() > 0);
     }
 
-    private void purchaseProduct(String name, int amount) {
+    private void purchaseProduct(String name, int amount, boolean isMembership) {
         Map<Boolean, List<Product>> partitionedProducts = partitionProductsByPromotion(name);
         int promotionConsumption = calculatePromotionConsumption(partitionedProducts.get(true), amount);
         int regularConsumption = calculateRegularConsumption(
@@ -131,7 +131,7 @@ public class ProductServiceImpl implements ProductService {
         int price = getPriceFromName(name);
         PurchaseSummary purchaseSummary = new PurchaseSummary(promotionConsumption, regularConsumption, price);
         Promotion promotion = promotionService.findPromotion(partitionedProducts.get(true).get(0).getPromotion());
-        PriceDetails priceDetails = priceCalculatorService.calculatePrice(purchaseSummary, promotion);
+        PriceDetails priceDetails = priceCalculatorService.calculatePrice(purchaseSummary, promotion, isMembership);
     }
 
     private Map<Boolean, List<Product>> partitionProductsByPromotion(String name) {

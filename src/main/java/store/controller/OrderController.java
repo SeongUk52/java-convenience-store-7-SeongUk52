@@ -28,7 +28,7 @@ public class OrderController {
             products.put(productName, updatedAmount);
         });
 
-        productService.purchaseProducts(products);
+        productService.purchaseProducts(products, inputView.isMembership());
 
         try {
             productService.saveAll("src/main/resources/products.md");

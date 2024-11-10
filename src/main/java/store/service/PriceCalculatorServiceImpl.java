@@ -7,11 +7,14 @@ import store.model.PurchaseSummary;
 
 public class PriceCalculatorServiceImpl implements PriceCalculatorService {
     @Override
-    public PriceDetails calculatePrice(PurchaseSummary purchaseSummary, Promotion promotion) {
+    public PriceDetails calculatePrice(PurchaseSummary purchaseSummary, Promotion promotion, boolean isMembership) {
+        int membershipDiscount = 0;
         int totalPrice = calculateTotalPrice(purchaseSummary);
         PromotionBenefit promotionBenefit = promotion.getBenefit(purchaseSummary.promotionConsumption());
         int promotionDiscount = calculatePromotionDiscount(purchaseSummary, promotionBenefit);
-        int membershipDiscount = calculateMembershipDiscount(purchaseSummary, promotionBenefit);
+        if (isMembership) {
+            membershipDiscount = calculateMembershipDiscount(purchaseSummary, promotionBenefit);
+        }
         int finalPrice = totalPrice - promotionDiscount - membershipDiscount;
         return new PriceDetails(
                 totalPrice,

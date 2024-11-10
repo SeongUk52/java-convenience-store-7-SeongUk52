@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface ProductService {
-    void purchaseProducts(Map<String, Integer> products);
+    void purchaseProducts(Map<String, Integer> products, boolean isMembership);
     List<String> getFormattedProductList();
     void saveAll(String filePath) throws IOException, URISyntaxException;
     int getAvailablePromotionCount(String productName, int currentCount);
