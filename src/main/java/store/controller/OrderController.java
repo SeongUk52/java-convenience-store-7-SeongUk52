@@ -17,6 +17,7 @@ public class OrderController {
 
     public void run() {
         displayProductList();
+        productService.purchaseProducts(inputView.requestPurchaseInput());
     }
 
     private void displayProductList() {

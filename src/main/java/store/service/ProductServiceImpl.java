@@ -1,5 +1,6 @@
 package store.service;
 
+import camp.nextstep.edu.missionutils.DateTimes;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +54,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private PurchaseSummary purchaseProduct(String name, int amount) {
+        System.out.println(name + amount);
         Map<Boolean, List<Product>> partitionedProducts = partitionProductsByPromotion(name);
         int promotionConsumption = calculatePromotionConsumption(partitionedProducts.get(true), amount);
         int regularConsumption = calculateRegularConsumption(
@@ -77,7 +79,8 @@ public class ProductServiceImpl implements ProductService {
 
     private int calculatePromotionConsumption(List<Product> promotionProducts, int amount) {
         return promotionProducts.stream()
-                .filter(product -> promotionService.isPromotionActiveForProduct(product, LocalDate.now()))
+                .filter(product -> promotionService.isPromotionActiveForProduct(product,
+                        LocalDate.from(DateTimes.now())))
                 .findFirst()
                 .map(product -> product.purchase(amount))
                 .orElse(0);
