@@ -37,7 +37,8 @@ public class ProductServiceImpl implements ProductService {
     public List<String> getFormattedProductList() {
         return productRepository.findAll().stream()
                 .collect(Collectors.groupingBy(Product::getName, LinkedHashMap::new, Collectors.toList()))
-                .entrySet().stream()
+                .entrySet()
+                .stream()
                 .flatMap(entry -> formatProductGroup(entry.getValue()).stream())
                 .toList();
     }
@@ -55,6 +56,21 @@ public class ProductServiceImpl implements ProductService {
                 .findFirst()
                 .map(product -> calculatePromotionCount(product, currentCount))
                 .orElse(0);
+    }
+
+    @Override
+    public int getInsufficientPromotionCount(String productName, int currentCount) {
+        if (productRepository.findByName(productName).stream()
+                .noneMatch(Product::hasPromotion)) {
+            return 0;
+        }
+        int sufficientPromotionCount = productRepository.findByName(productName)
+                .stream()
+                .filter(Product::hasPromotion)
+                .findFirst()
+                .map(product -> calculateSufficientPromotionCount(product, currentCount))
+                .orElse(0);
+        return currentCount - sufficientPromotionCount;
     }
 
     private int calculatePromotionCount(Product product, int currentCount) {
@@ -82,12 +98,12 @@ public class ProductServiceImpl implements ProductService {
         return product.getQuantity() >= currentCount + promotion.getGet();
     }
 
-    private int calculateRequiredCount(int currentCount, int threshold) {
-        return currentCount - (currentCount % threshold) + threshold;
-    }
-
-    private boolean isStockInsufficient(Product product, int requiredCount) {
-        return product.getQuantity() < requiredCount;
+    private int calculateSufficientPromotionCount(Product product, int currentCount) {
+        Promotion promotion = promotionService.findPromotion(product.getPromotion());
+        if (product.getQuantity() >= currentCount) {
+            return currentCount;
+        }
+        return product.getQuantity() - (product.getQuantity() % promotion.getThreshold());
     }
 
     private List<String> formatProductGroup(List<Product> products) {

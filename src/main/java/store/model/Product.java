@@ -53,12 +53,15 @@ public class Product {
 
     public String toFormattedString() {
         String formattedPrice = String.format("%,d", price);
-        String formattedQuantity = String.format("%,d", quantity);
+        String formattedQuantity = String.format("%,d개", quantity);
+        if (quantity == 0) {
+            formattedQuantity = "재고 없음";
+        }
 
         if (Objects.equals(promotion, "null") || promotion.isEmpty()) {
-            return String.format("- %s %s원 %s개", name, formattedPrice, formattedQuantity);
+            return String.format("- %s %s원 %s", name, formattedPrice, formattedQuantity);
         }
-        return String.format("- %s %s원 %s개 %s", name, formattedPrice, formattedQuantity, promotion);
+        return String.format("- %s %s원 %s %s", name, formattedPrice, formattedQuantity, promotion);
     }
 
     public String toOutOfStockString() {

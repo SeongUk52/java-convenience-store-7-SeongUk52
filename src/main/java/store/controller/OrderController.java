@@ -50,6 +50,13 @@ public class OrderController {
                 return amount + availablePromotionCount;
             }
         }
+        int insufficientPromotionCount = productService.getInsufficientPromotionCount(productName, amount);
+        if (insufficientPromotionCount > 0) {
+            boolean applyRegularPrice = inputView.askForRegularPrice(productName, insufficientPromotionCount);
+            if (!applyRegularPrice) {
+                return amount - insufficientPromotionCount;
+            }
+        }
         return amount;
     }
 }
