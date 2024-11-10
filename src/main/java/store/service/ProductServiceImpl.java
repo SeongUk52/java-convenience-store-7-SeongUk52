@@ -6,7 +6,6 @@ import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.LinkedHashMap;
@@ -29,8 +28,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void purchaseProducts(Map<String, Integer> products, boolean isMembership) {
-        products.forEach((name, amount) -> purchaseProduct(name, amount, isMembership));
+    public Map<String, PriceDetails> purchaseProducts(Map<String, Integer> products, boolean isMembership) {
+        return products.entrySet()
+                .stream()
+                .collect(Collectors.toMap(
+                    Map.Entry::getKey,
+                    entry -> purchaseProduct(entry.getKey(), entry.getValue(), isMembership)
+                ));
     }
 
     @Override
@@ -123,7 +127,7 @@ public class ProductServiceImpl implements ProductService {
         return products.stream().noneMatch(product -> !product.hasPromotion() && product.getQuantity() > 0);
     }
 
-    private void purchaseProduct(String name, int amount, boolean isMembership) {
+    private PriceDetails purchaseProduct(String name, int amount, boolean isMembership) {
         Map<Boolean, List<Product>> partitionedProducts = partitionProductsByPromotion(name);
         int promotionConsumption = calculatePromotionConsumption(partitionedProducts.get(true), amount);
         int regularConsumption = calculateRegularConsumption(
@@ -131,7 +135,7 @@ public class ProductServiceImpl implements ProductService {
         int price = getPriceFromName(name);
         PurchaseSummary purchaseSummary = new PurchaseSummary(promotionConsumption, regularConsumption, price);
         Promotion promotion = promotionService.findPromotion(partitionedProducts.get(true).get(0).getPromotion());
-        PriceDetails priceDetails = priceCalculatorService.calculatePrice(purchaseSummary, promotion, isMembership);
+        return priceCalculatorService.calculatePrice(purchaseSummary, promotion, isMembership);
     }
 
     private Map<Boolean, List<Product>> partitionProductsByPromotion(String name) {

@@ -2,9 +2,12 @@ package store.controller;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Map;
+import store.model.PriceDetails;
 import store.service.ProductService;
 import store.util.ProductParser;
+import store.util.ReceiptFormatterUtil;
 import store.view.InputView;
 import store.view.OutputView;
 
@@ -28,7 +31,11 @@ public class OrderController {
             products.put(productName, updatedAmount);
         });
 
-        productService.purchaseProducts(products, inputView.isMembership());
+        Map<String, PriceDetails> productDetailsMap = productService
+                .purchaseProducts(products, inputView.isMembership());
+
+        List<String> receipt = ReceiptFormatterUtil.formatReceipt(productDetailsMap);
+        outputView.printReceipt(receipt);
 
         try {
             productService.saveAll("src/main/resources/products.md");

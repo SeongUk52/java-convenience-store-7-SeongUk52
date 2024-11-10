@@ -20,7 +20,9 @@ public class PriceCalculatorServiceImpl implements PriceCalculatorService {
                 totalPrice,
                 promotionDiscount,
                 membershipDiscount,
-                finalPrice
+                finalPrice,
+                promotionBenefit.eligibleItems(),
+                purchaseSummary.regularConsumption() + purchaseSummary.promotionConsumption()
         );
     }
 

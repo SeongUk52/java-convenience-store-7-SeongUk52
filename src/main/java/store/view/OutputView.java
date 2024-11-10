@@ -9,4 +9,8 @@ public class OutputView {
         formattedProductList.forEach(System.out::println);
         System.out.println();
     }
+
+    public void printReceipt(List<String> receipt) {
+        receipt.forEach(System.out::println);
+    }
 }

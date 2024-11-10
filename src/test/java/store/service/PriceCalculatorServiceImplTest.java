@@ -20,7 +20,9 @@ class PriceCalculatorServiceImplTest {
                 10000,
                 3000,
                 1200,
-                5800
+                5800,
+                3,
+                10
         ), priceDetails);
     }
 }
