@@ -15,7 +15,7 @@ public class PromotionServiceImpl implements PromotionService {
     @Override
     public boolean isPromotionActiveForProduct(Product product, LocalDate currentDate) {
         Promotion promotion = promotionRepository.findByName(product.getPromotion());
-        return promotion.isValid(currentDate);
+        return (promotion != null && promotion.isValid(currentDate));
     }
 
     @Override

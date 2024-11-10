@@ -15,6 +15,7 @@ import store.repository.FileProductRepository;
 import store.repository.FilePromotionRepository;
 import store.repository.ProductRepository;
 import store.repository.PromotionRepository;
+import store.util.ProductParser;
 
 class ProductServiceImplTest {
     private ProductService productService;
@@ -43,7 +44,7 @@ class ProductServiceImplTest {
 
     @Test
     void purchaseProducts() {
-        productService.purchaseProducts("[콜라-3]");
+        productService.purchaseProducts(ProductParser.parse("[콜라-3]"));
 
         assertEquals(
                 7,

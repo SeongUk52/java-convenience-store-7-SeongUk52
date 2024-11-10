@@ -29,4 +29,20 @@ public class Promotion {
         int cycles = promotionConsumption / (buy + get);
         return new PromotionBenefit(cycles * (buy + get),cycles * get);
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getBuy() {
+        return buy;
+    }
+
+    public int getGet() {
+        return get;
+    }
+
+    public int getThreshold() {
+        return get + buy;
+    }
 }

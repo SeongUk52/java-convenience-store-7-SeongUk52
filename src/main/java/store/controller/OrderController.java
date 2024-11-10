@@ -2,7 +2,9 @@ package store.controller;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Map;
 import store.service.ProductService;
+import store.util.ProductParser;
 import store.view.InputView;
 import store.view.OutputView;
 
@@ -19,7 +21,14 @@ public class OrderController {
 
     public void run() {
         displayProductList();
-        productService.purchaseProducts(inputView.requestPurchaseInput());
+        Map<String, Integer> products = ProductParser.parse(inputView.requestPurchaseInput());
+
+        products.forEach((productName, amount) -> {
+            int updatedAmount = handlePromotion(productName, amount);
+            products.put(productName, updatedAmount);
+        });
+
+        productService.purchaseProducts(products);
 
         try {
             productService.saveAll("src/main/resources/products.md");
@@ -30,5 +39,17 @@ public class OrderController {
 
     private void displayProductList() {
         outputView.printFormattedProductList(productService.getFormattedProductList());
+    }
+
+    private int handlePromotion(String productName, int amount) {
+        int availablePromotionCount = productService.getAvailablePromotionCount(productName, amount);
+
+        if (availablePromotionCount > 0) {
+            boolean addItem = inputView.askForFreeItem(productName, availablePromotionCount);
+            if (addItem) {
+                return amount + availablePromotionCount;
+            }
+        }
+        return amount;
     }
 }
