@@ -23,20 +23,23 @@ public class OrderController {
     }
 
     public void run() {
-        displayProductList();
-        Map<String, Integer> products = ProductParser.parse(inputView.requestPurchaseInput());
+        boolean isContinue = true;
+        while (isContinue) {
+            displayProductList();
+            Map<String, Integer> products = ProductParser.parse(inputView.requestPurchaseInput());
 
-        products.forEach((productName, amount) -> {
-            int updatedAmount = handlePromotion(productName, amount);
-            products.put(productName, updatedAmount);
-        });
+            products.forEach((productName, amount) -> {
+                int updatedAmount = handlePromotion(productName, amount);
+                products.put(productName, updatedAmount);
+            });
 
-        Map<String, PriceDetails> productDetailsMap = productService
-                .purchaseProducts(products, inputView.isMembership());
+            Map<String, PriceDetails> productDetailsMap = productService
+                    .purchaseProducts(products, inputView.isMembership());
 
-        List<String> receipt = ReceiptFormatterUtil.formatReceipt(productDetailsMap);
-        outputView.printReceipt(receipt);
-
+            List<String> receipt = ReceiptFormatterUtil.formatReceipt(productDetailsMap);
+            outputView.printReceipt(receipt);
+            isContinue = inputView.isContinue();
+        }
         try {
             productService.saveAll("src/main/resources/products.md");
         } catch (IOException | URISyntaxException e) {
