@@ -21,6 +21,11 @@ public class FileProductRepository implements ProductRepository {
                 .toList();
     }
 
+    @Override
+    public List<Product> findAll() {
+        return products;
+    }
+
     public void saveToFile(String filePath) throws IOException, URISyntaxException {
         FileUtils.saveToFile(filePath, products);
     }

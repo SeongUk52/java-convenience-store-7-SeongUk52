@@ -31,10 +31,6 @@ public class Product {
         return name + "," + price + "," + quantity + "," + null;
     }
 
-    public String getPromotion() {
-        return promotion;
-    }
-
     public boolean hasPromotion() {
         return !Objects.equals(promotion, "null");
     }
@@ -47,4 +43,25 @@ public class Product {
         return quantity;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getPromotion() {
+        return promotion;
+    }
+
+    public String toFormattedString() {
+        String formattedPrice = String.format("%,d", price);
+        String formattedQuantity = String.format("%,d", quantity);
+
+        if (Objects.equals(promotion, "null") || promotion.isEmpty()) {
+            return String.format("- %s %s원 %s개", name, formattedPrice, formattedQuantity);
+        }
+        return String.format("- %s %s원 %s개 %s", name, formattedPrice, formattedQuantity, promotion);
+    }
+
+    public String toOutOfStockString() {
+        return String.format("- %s %,d원 재고 없음", name, price);
+    }
 }

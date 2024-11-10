@@ -2,6 +2,7 @@ package store.config;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import store.controller.OrderController;
 import store.infrastructure.DataParser;
 import store.infrastructure.ProductCsvDataParser;
 import store.infrastructure.PromotionCsvDataParser;
@@ -15,6 +16,8 @@ import store.service.ProductService;
 import store.service.ProductServiceImpl;
 import store.service.PromotionService;
 import store.service.PromotionServiceImpl;
+import store.view.InputView;
+import store.view.OutputView;
 
 public class AppConfig {
     private static final AppConfig instance = new AppConfig();
@@ -22,6 +25,9 @@ public class AppConfig {
     private final PromotionRepository promotionRepository;
     private final PromotionService promotionService;
     private final ProductService productService;
+    private final InputView inputView = new InputView();
+    private final OutputView outputView = new OutputView();
+    private final OrderController orderController;
 
     private AppConfig() {
         try {
@@ -34,6 +40,7 @@ public class AppConfig {
         }
         promotionService = new PromotionServiceImpl(promotionRepository);
         productService = new ProductServiceImpl(productRepository, promotionService);
+        orderController = new OrderController(productService, inputView, outputView);
     }
 
     public static AppConfig getInstance() {
@@ -54,5 +61,9 @@ public class AppConfig {
 
     public PromotionService getPromotionService() {
         return promotionService;
+    }
+
+    public OrderController getOrderController() {
+        return orderController;
     }
 }

@@ -5,4 +5,5 @@ import store.model.Product;
 
 public interface ProductRepository {
     List<Product> findByName(String name);
+    List<Product> findAll();
 }

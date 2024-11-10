@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.LinkedHashMap;
 import store.model.Product;
 import store.model.PurchaseSummary;
 import store.repository.ProductRepository;
@@ -22,6 +24,32 @@ public class ProductServiceImpl implements ProductService {
     public void purchaseProducts(String input) {
         Map<String, Integer> products = ProductParser.parse(input);
         products.forEach(this::purchaseProduct);
+    }
+
+    @Override
+    public List<String> getFormattedProductList() {
+        return productRepository.findAll().stream()
+                .collect(Collectors.groupingBy(Product::getName, LinkedHashMap::new, Collectors.toList()))
+                .entrySet().stream()
+                .flatMap(entry -> formatProductGroup(entry.getValue()).stream())
+                .toList();
+    }
+
+    private List<String> formatProductGroup(List<Product> products) {
+        List<String> formattedProducts = products.stream()
+                .map(Product::toFormattedString)
+                .toList();
+
+        if (hasNoRegularStock(products)) {
+            formattedProducts = Stream.concat(
+                    formattedProducts.stream(), Stream.of(products.get(0).toOutOfStockString()))
+                    .toList();
+        }
+        return formattedProducts;
+    }
+
+    private boolean hasNoRegularStock(List<Product> products) {
+        return products.stream().noneMatch(product -> !product.hasPromotion() && product.getQuantity() > 0);
     }
 
     private PurchaseSummary purchaseProduct(String name, int amount) {
