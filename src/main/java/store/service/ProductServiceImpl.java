@@ -29,13 +29,22 @@ public class ProductServiceImpl implements ProductService {
         int promotionConsumption = calculatePromotionConsumption(partitionedProducts.get(true), amount);
         int regularConsumption = calculateRegularConsumption(
                 partitionedProducts.get(false), amount - promotionConsumption);
+        int price = getPriceFromName(name);
 
-        return new PurchaseSummary(promotionConsumption, regularConsumption);
+        return new PurchaseSummary(promotionConsumption, regularConsumption, price);
     }
 
     private Map<Boolean, List<Product>> partitionProductsByPromotion(String name) {
         return productRepository.findByName(name).stream()
                 .collect(Collectors.partitioningBy(Product::hasPromotion));
+    }
+
+    private int getPriceFromName(String name) {
+        return productRepository.findByName(name)
+                .stream()
+                .findFirst()
+                .map(Product::getPrice)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다. 다시 입력해 주세요."));
     }
 
     private int calculatePromotionConsumption(List<Product> promotionProducts, int amount) {

@@ -24,4 +24,9 @@ public class Promotion {
     public boolean isValid(LocalDate currentDate) {
         return !currentDate.isBefore(startDate) && !currentDate.isAfter(endDate);
     }
+
+    public int getBenefitCount(int promotionConsumption) {
+        int cycles = promotionConsumption / (buy + get);
+        return cycles * get;
+    }
 }

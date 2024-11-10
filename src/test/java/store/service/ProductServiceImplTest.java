@@ -43,14 +43,15 @@ class ProductServiceImplTest {
     void purchaseProducts() {
         productService.purchaseProducts("[콜라-3]");
 
-        assertEquals(productRepository
+        assertEquals(
+                7,
+                productRepository
                 .findByName("콜라")
                 .stream()
                 .filter(Product::hasPromotion)
                 .findFirst()
                 .get()
-                .getQuantity(),
-                7
+                .getQuantity()
         );
     }
 }

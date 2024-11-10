@@ -39,6 +39,10 @@ public class Product {
         return !Objects.equals(promotion, "null");
     }
 
+    public int getPrice() {
+        return price;
+    }
+
     public int getQuantity() {
         return quantity;
     }
