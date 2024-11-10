@@ -33,9 +33,11 @@ class ProductServiceImplTest {
                 productDataParser
         );
         PromotionService promotionService = new PromotionServiceImpl(promotionRepository);
+        PriceCalculatorService priceCalculatorService = new PriceCalculatorServiceImpl();
         productService = new ProductServiceImpl(
-                productRepository,
-                promotionService
+                (FileProductRepository) productRepository,
+                promotionService,
+                priceCalculatorService
         );
     }
 

@@ -12,6 +12,8 @@ import store.repository.FileProductRepository;
 import store.repository.FilePromotionRepository;
 import store.repository.ProductRepository;
 import store.repository.PromotionRepository;
+import store.service.PriceCalculatorService;
+import store.service.PriceCalculatorServiceImpl;
 import store.service.ProductService;
 import store.service.ProductServiceImpl;
 import store.service.PromotionService;
@@ -25,6 +27,7 @@ public class AppConfig {
     private final PromotionRepository promotionRepository;
     private final PromotionService promotionService;
     private final ProductService productService;
+    private final PriceCalculatorService priceCalculatorService = new PriceCalculatorServiceImpl();
     private final InputView inputView = new InputView();
     private final OutputView outputView = new OutputView();
     private final OrderController orderController;
@@ -39,7 +42,7 @@ public class AppConfig {
             throw new RuntimeException(e);
         }
         promotionService = new PromotionServiceImpl(promotionRepository);
-        productService = new ProductServiceImpl(productRepository, promotionService);
+        productService = new ProductServiceImpl(productRepository, promotionService, priceCalculatorService);
         orderController = new OrderController(productService, inputView, outputView);
     }
 

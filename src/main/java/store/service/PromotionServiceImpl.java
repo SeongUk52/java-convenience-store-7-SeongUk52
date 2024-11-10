@@ -17,4 +17,9 @@ public class PromotionServiceImpl implements PromotionService {
         Promotion promotion = promotionRepository.findByName(product.getPromotion());
         return promotion.isValid(currentDate);
     }
+
+    @Override
+    public Promotion findPromotion(String input) {
+        return promotionRepository.findByName(input);
+    }
 }

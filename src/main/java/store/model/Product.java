@@ -19,7 +19,7 @@ public class Product {
     public int purchase(int quantityToBuy) {
         int availableQuantity = Math.min(quantityToBuy, quantity);
         quantity -= availableQuantity;
-        return quantityToBuy - availableQuantity;
+        return availableQuantity;
     }
 
     public boolean isNameEqualTo(String name) {
@@ -28,7 +28,7 @@ public class Product {
 
     @Override
     public String toString() {
-        return name + "," + price + "," + quantity + "," + null;
+        return name + "," + price + "," + quantity + "," + promotion;
     }
 
     public boolean hasPromotion() {

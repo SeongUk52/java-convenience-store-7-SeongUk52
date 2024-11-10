@@ -1,24 +1,31 @@
 package store.service;
 
 import camp.nextstep.edu.missionutils.DateTimes;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.LinkedHashMap;
+import store.model.PriceDetails;
 import store.model.Product;
+import store.model.Promotion;
 import store.model.PurchaseSummary;
-import store.repository.ProductRepository;
+import store.repository.FileProductRepository;
 import store.util.ProductParser;
 
 public class ProductServiceImpl implements ProductService {
-    private final ProductRepository productRepository;
+    private final FileProductRepository productRepository;
     private final PromotionService promotionService;
+    private final PriceCalculatorService priceCalculatorService;
 
-    public ProductServiceImpl(ProductRepository productRepository, PromotionService promotionService) {
+    public ProductServiceImpl(FileProductRepository productRepository, PromotionService promotionService,
+                              PriceCalculatorService priceCalculatorService) {
         this.productRepository = productRepository;
         this.promotionService = promotionService;
+        this.priceCalculatorService = priceCalculatorService;
     }
 
     @Override
@@ -34,6 +41,11 @@ public class ProductServiceImpl implements ProductService {
                 .entrySet().stream()
                 .flatMap(entry -> formatProductGroup(entry.getValue()).stream())
                 .toList();
+    }
+
+    @Override
+    public void saveAll(String filePath) throws IOException, URISyntaxException {
+        productRepository.saveToFile(filePath);
     }
 
     private List<String> formatProductGroup(List<Product> products) {
@@ -53,15 +65,15 @@ public class ProductServiceImpl implements ProductService {
         return products.stream().noneMatch(product -> !product.hasPromotion() && product.getQuantity() > 0);
     }
 
-    private PurchaseSummary purchaseProduct(String name, int amount) {
-        System.out.println(name + amount);
+    private void purchaseProduct(String name, int amount) {
         Map<Boolean, List<Product>> partitionedProducts = partitionProductsByPromotion(name);
         int promotionConsumption = calculatePromotionConsumption(partitionedProducts.get(true), amount);
         int regularConsumption = calculateRegularConsumption(
                 partitionedProducts.get(false), amount - promotionConsumption);
         int price = getPriceFromName(name);
-
-        return new PurchaseSummary(promotionConsumption, regularConsumption, price);
+        PurchaseSummary purchaseSummary = new PurchaseSummary(promotionConsumption, regularConsumption, price);
+        Promotion promotion = promotionService.findPromotion(partitionedProducts.get(true).get(0).getPromotion());
+        PriceDetails priceDetails = priceCalculatorService.calculatePrice(purchaseSummary, promotion);
     }
 
     private Map<Boolean, List<Product>> partitionProductsByPromotion(String name) {
