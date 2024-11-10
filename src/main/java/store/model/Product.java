@@ -5,6 +5,7 @@ import java.util.Objects;
 public class Product {
     private String name;
     private int price;
+
     private int quantity;
     private String promotion;
 
@@ -37,4 +38,9 @@ public class Product {
     public boolean hasPromotion() {
         return !Objects.equals(promotion, "null");
     }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
 }

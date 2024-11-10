@@ -20,11 +20,11 @@ class PromotionServiceImplTest {
     @Test
     void isPromotionActiveForProduct() throws IOException, URISyntaxException {
         DataParser<Promotion> promotionDataParser = new PromotionCsvDataParser();
-        PromotionRepository testPromotionRepository = new FilePromotionRepository(
+        PromotionRepository promotionRepository = new FilePromotionRepository(
                 "promotions_test.md",
                 promotionDataParser
         );
-        PromotionService promotionService = new PromotionServiceImpl(testPromotionRepository);
+        PromotionService promotionService = new PromotionServiceImpl(promotionRepository);
 
         Product product = new Product("탄산수", 1000, 10, "탄산2+1");
 

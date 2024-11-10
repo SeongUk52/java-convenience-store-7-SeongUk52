@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import store.model.Product;
 import store.model.PurchaseSummary;
 import store.repository.ProductRepository;
+import store.util.ProductParser;
 
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
@@ -19,7 +20,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void purchaseProducts(String input) {
-
+        Map<String, Integer> products = ProductParser.parse(input);
+        products.forEach(this::purchaseProduct);
     }
 
     private PurchaseSummary purchaseProduct(String name, int amount) {
