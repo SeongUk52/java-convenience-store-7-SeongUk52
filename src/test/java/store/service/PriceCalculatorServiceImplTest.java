@@ -20,8 +20,8 @@ class PriceCalculatorServiceImplTest {
         assertEquals(new PriceDetails(
                 10000,
                 3000,
-                0
-                ,7000
+                1200,
+                5800
         ), priceDetails);
     }
 }

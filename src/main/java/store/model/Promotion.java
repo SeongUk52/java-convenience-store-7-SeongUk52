@@ -25,8 +25,8 @@ public class Promotion {
         return !currentDate.isBefore(startDate) && !currentDate.isAfter(endDate);
     }
 
-    public int getBenefitCount(int promotionConsumption) {
+    public PromotionBenefit getBenefit(int promotionConsumption) {
         int cycles = promotionConsumption / (buy + get);
-        return cycles * get;
+        return new PromotionBenefit(cycles * (buy + get),cycles * get);
     }
 }

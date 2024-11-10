@@ -2,14 +2,16 @@ package store.service;
 
 import store.model.PriceDetails;
 import store.model.Promotion;
+import store.model.PromotionBenefit;
 import store.model.PurchaseSummary;
 
 public class PriceCalculatorServiceImpl implements PriceCalculatorService {
     @Override
     public PriceDetails calculatePrice(PurchaseSummary purchaseSummary, Promotion promotion) {
         int totalPrice = calculateTotalPrice(purchaseSummary);
-        int promotionDiscount = calculatePromotionDiscount(purchaseSummary, promotion);
-        int membershipDiscount = 0;
+        PromotionBenefit promotionBenefit = promotion.getBenefit(purchaseSummary.promotionConsumption());
+        int promotionDiscount = calculatePromotionDiscount(purchaseSummary, promotionBenefit);
+        int membershipDiscount = calculateMembershipDiscount(purchaseSummary, promotionBenefit);
         int finalPrice = totalPrice - promotionDiscount - membershipDiscount;
         return new PriceDetails(
                 totalPrice,
@@ -20,26 +22,18 @@ public class PriceCalculatorServiceImpl implements PriceCalculatorService {
     }
 
     private int calculateTotalPrice(PurchaseSummary purchaseSummary) {
-        return purchaseSummary.price() *
-                (purchaseSummary.regularConsumption() + purchaseSummary.promotionConsumption());
-    }
-
-    private int calculatePromotionDiscount(PurchaseSummary purchaseSummary, Promotion promotion) {
-        return promotion.getBenefitCount(purchaseSummary.promotionConsumption()) * purchaseSummary.price();
-    }
-
-    private int calculateMembershipDiscount(PurchaseSummary purchaseSummary) {
-        return 0;
-    }
-
-    private int calculateExcludingPromotionPrice(PurchaseSummary purchaseSummary, Promotion promotion) {
-        int excludedItems = getExcludedItems(purchaseSummary, promotion);
-        return purchaseSummary.price() * excludedItems;
-    }
-
-    private int getExcludedItems(PurchaseSummary purchaseSummary, Promotion promotion) {
         int totalItems = purchaseSummary.regularConsumption() + purchaseSummary.promotionConsumption();
-        int discountedItems = promotion.getBenefitCount(purchaseSummary.promotionConsumption());
-        return totalItems - discountedItems;
+        return purchaseSummary.price() * totalItems;
+    }
+
+    private int calculatePromotionDiscount(PurchaseSummary purchaseSummary, PromotionBenefit promotionBenefit) {
+        return promotionBenefit.eligibleItems() * purchaseSummary.price();
+    }
+
+    private int calculateMembershipDiscount(PurchaseSummary purchaseSummary, PromotionBenefit promotionBenefit) {
+        int excludedItems = purchaseSummary.regularConsumption() + purchaseSummary.promotionConsumption()
+                - promotionBenefit.totalItems();
+        int discountAmount = (int) (purchaseSummary.price() * excludedItems * 0.3);
+        return Math.min(discountAmount, 8_000);
     }
 }
