@@ -44,7 +44,8 @@ public class OrderController {
 
     private void processPurchase(Map<String, Integer> products) {
         try {
-            Map<String, PriceDetails> productDetailsMap = productService.purchaseProducts(products, inputView.isMembership());
+            Map<String, PriceDetails> productDetailsMap = productService.purchaseProducts(
+                    products, inputView.isMembership());
             List<String> receipt = ReceiptFormatterUtil.formatReceipt(productDetailsMap);
             outputView.printReceipt(receipt);
         } catch (IllegalArgumentException e) {
