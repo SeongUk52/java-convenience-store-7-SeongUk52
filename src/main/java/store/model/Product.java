@@ -5,7 +5,6 @@ import java.util.Objects;
 public class Product {
     private final String name;
     private final int price;
-
     private int quantity;
     private final String promotion;
 
