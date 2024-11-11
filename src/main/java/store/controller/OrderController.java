@@ -50,13 +50,11 @@ public class OrderController {
             outputView.printReceipt(receipt);
             isContinue = inputView.isContinue();
         }
-        /*
         try {
             productService.saveAll("src/main/resources/products.md");
         } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
-         */
     }
 
     private void displayProductList() {
@@ -79,17 +77,5 @@ public class OrderController {
             }
         }
         return amount;
-    }
-
-    private void executeWithRetry(Runnable action) {
-        boolean retry = true;
-        while (retry) {
-            try {
-                action.run();
-                retry = false;
-            } catch (Exception e) {
-                System.out.println("잘못된 입력입니다. 다시 시도해주세요.");
-            }
-        }
     }
 }
