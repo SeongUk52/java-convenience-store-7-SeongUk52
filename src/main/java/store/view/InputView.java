@@ -39,7 +39,7 @@ public class InputView {
                 YesNoInputValidator.validateYesNoInput(input);
                 break;
             } catch (IllegalArgumentException e) {
-                System.out.println("[ERROR] " + e.getMessage());
+                System.out.println(e.getMessage());
             }
         }
         return input.equalsIgnoreCase("Y");
