@@ -13,4 +13,8 @@ public class OutputView {
     public void printReceipt(List<String> receipt) {
         receipt.forEach(System.out::println);
     }
+
+    public void printErrorMessage(String errorMessage) {
+        System.out.println("[ERROR] " + errorMessage);
+    }
 }

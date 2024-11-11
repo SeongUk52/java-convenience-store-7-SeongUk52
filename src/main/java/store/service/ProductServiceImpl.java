@@ -54,6 +54,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public int getAvailablePromotionCount(String productName, int currentCount) {
+        validateSufficientTotalStock(productName, currentCount);
         return productRepository.findByName(productName)
                 .stream()
                 .filter(Product::hasPromotion)
@@ -64,6 +65,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public int getInsufficientPromotionCount(String productName, int currentCount) {
+        validateSufficientTotalStock(productName, currentCount);
         if (productRepository.findByName(productName).stream()
                 .noneMatch(Product::hasPromotion)) {
             return 0;
@@ -78,6 +80,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private int calculatePromotionCount(Product product, int currentCount) {
+        validateSufficientTotalStock(product.getName(), currentCount);
         Promotion promotion = promotionService.findPromotion(product.getPromotion());
         if (!isPromotionValid(promotion)) {
             return 0;
@@ -175,5 +178,16 @@ public class ProductServiceImpl implements ProductService {
                 .findFirst()
                 .map(product -> product.purchase(remainingAmount))
                 .orElse(0);
+    }
+
+    private void validateSufficientTotalStock(String productName, int amount) {
+        int totalStock = productRepository.findByName(productName)
+                .stream()
+                .map(Product::getQuantity)
+                .mapToInt(Integer::intValue)
+                .sum();
+        if (amount > totalStock) {
+            throw new IllegalArgumentException("재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요.");
+        }
     }
 }
