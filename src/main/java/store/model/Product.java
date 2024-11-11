@@ -3,11 +3,11 @@ package store.model;
 import java.util.Objects;
 
 public class Product {
-    private String name;
-    private int price;
+    private final String name;
+    private final int price;
 
     private int quantity;
-    private String promotion;
+    private final String promotion;
 
     public Product(String name, int price, int quantity, String promotion) {
         this.name = name;
@@ -53,15 +53,24 @@ public class Product {
 
     public String toFormattedString() {
         String formattedPrice = String.format("%,d", price);
-        String formattedQuantity = String.format("%,d개", quantity);
-        if (quantity == 0) {
-            formattedQuantity = "재고 없음";
-        }
+        String formattedQuantity = getFormattedQuantity();
+        String promotionPart = getPromotionPart();
 
-        if (Objects.equals(promotion, "null") || promotion.isEmpty()) {
-            return String.format("- %s %s원 %s", name, formattedPrice, formattedQuantity);
+        return String.format("- %s %s원 %s%s", name, formattedPrice, formattedQuantity, promotionPart);
+    }
+
+    private String getFormattedQuantity() {
+        if (quantity == 0) {
+            return "재고 없음";
         }
-        return String.format("- %s %s원 %s %s", name, formattedPrice, formattedQuantity, promotion);
+        return String.format("%,d개", quantity);
+    }
+
+    private String getPromotionPart() {
+        if (Objects.equals(promotion, "null") || promotion.isEmpty()) {
+            return "";
+        }
+        return " " + promotion;
     }
 
     public String toOutOfStockString() {
