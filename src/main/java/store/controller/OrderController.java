@@ -27,29 +27,28 @@ public class OrderController {
     public void run() {
         boolean isContinue = true;
         while (isContinue) {
-            Map<String, PriceDetails> productDetailsMap = new HashMap<>();
             displayProductList();
-            boolean retry = true;
-            while (retry) {
-                try {
-                    Map<String, Integer> products = ProductParser.parse(inputView.requestPurchaseInput());
-                    products.forEach(ProductValidator::validateProduct);
-                    products.forEach((productName, amount) -> {
-                        int updatedAmount = handlePromotion(productName, amount);
-                        products.put(productName, updatedAmount);
-                    });
-                    productDetailsMap = productService
-                            .purchaseProducts(products, inputView.isMembership());
-                    retry = false;
-                } catch (IllegalArgumentException e) {
-                    outputView.printErrorMessage(e.getMessage());
-                }
+            Map<String, Integer> products = getValidProducts();
+            if (products == null) {
+                continue;
             }
-
-            List<String> receipt = ReceiptFormatterUtil.formatReceipt(productDetailsMap);
-            outputView.printReceipt(receipt);
+            processPurchase(products);
             isContinue = inputView.isContinue();
         }
+        saveProducts();
+    }
+
+    private void processPurchase(Map<String, Integer> products) {
+        try {
+            Map<String, PriceDetails> productDetailsMap = productService.purchaseProducts(products, inputView.isMembership());
+            List<String> receipt = ReceiptFormatterUtil.formatReceipt(productDetailsMap);
+            outputView.printReceipt(receipt);
+        } catch (IllegalArgumentException e) {
+            outputView.printErrorMessage(e.getMessage());
+        }
+    }
+
+    private void saveProducts() {
         try {
             productService.saveAll("src/main/resources/products.md");
         } catch (IOException | URISyntaxException e) {
@@ -61,20 +60,53 @@ public class OrderController {
         outputView.printFormattedProductList(productService.getFormattedProductList());
     }
 
-    private int handlePromotion(String productName, int amount) {
-        int availablePromotionCount = productService.getAvailablePromotionCount(productName, amount);
-        if (availablePromotionCount > 0) {
-            boolean addItem = inputView.askForFreeItem(productName, availablePromotionCount);
-            if (addItem) {
-                return amount + availablePromotionCount;
+    private Map<String, Integer> getValidProducts() {
+        Map<String, Integer> products = null;
+        boolean retry = true;
+        while (retry) {
+            try {
+                products = ProductParser.parse(inputView.requestPurchaseInput());
+                products.forEach(ProductValidator::validateProduct);
+                products = applyPromotions(products);
+                retry = false;
+            } catch (IllegalArgumentException e) {
+                outputView.printErrorMessage(e.getMessage());
             }
         }
+        return products;
+    }
+
+    private Map<String, Integer> applyPromotions(Map<String, Integer> products) {
+        Map<String, Integer> updatedProducts = new HashMap<>(products);
+        updatedProducts.forEach((productName, amount) -> {
+            int updatedAmount = handlePromotion(productName, amount);
+            updatedProducts.put(productName, updatedAmount);
+        });
+        return updatedProducts;
+    }
+
+    private int handlePromotion(String productName, int amount) {
+        int updatedAmount = amount;
+
+        updatedAmount = applyFreeItemPromotion(productName, updatedAmount);
+        if (updatedAmount != amount) return updatedAmount;
+
+        updatedAmount = applyRegularPricePromotion(productName, updatedAmount);
+        return updatedAmount;
+    }
+
+    private int applyFreeItemPromotion(String productName, int amount) {
+        int availablePromotionCount = productService.getAvailablePromotionCount(productName, amount);
+        if (availablePromotionCount > 0 && inputView.askForFreeItem(productName, availablePromotionCount)) {
+            return amount + availablePromotionCount;
+        }
+        return amount;
+    }
+
+    private int applyRegularPricePromotion(String productName, int amount) {
         int insufficientPromotionCount = productService.getInsufficientPromotionCount(productName, amount);
-        if (insufficientPromotionCount > 0) {
-            boolean applyRegularPrice = inputView.askForRegularPrice(productName, insufficientPromotionCount);
-            if (!applyRegularPrice) {
-                return amount - insufficientPromotionCount;
-            }
+        if (insufficientPromotionCount > 0 && !inputView.askForRegularPrice(productName, insufficientPromotionCount)) {
+            return amount - insufficientPromotionCount;
         }
         return amount;
     }
