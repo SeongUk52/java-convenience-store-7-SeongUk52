@@ -1,5 +1,8 @@
 package store.service;
 
+import static store.constants.ErrorMessage.EXCEEDS_STOCK;
+import static store.constants.ErrorMessage.NON_EXISTENT_PRODUCT;
+
 import camp.nextstep.edu.missionutils.DateTimes;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -161,7 +164,7 @@ public class ProductServiceImpl implements ProductService {
                 .stream()
                 .findFirst()
                 .map(Product::getPrice)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다. 다시 입력해 주세요."));
+                .orElseThrow(() -> new IllegalArgumentException(NON_EXISTENT_PRODUCT.getMessage()));
     }
 
     private int calculatePromotionConsumption(List<Product> promotionProducts, int amount) {
@@ -187,10 +190,10 @@ public class ProductServiceImpl implements ProductService {
                 .mapToInt(Integer::intValue)
                 .sum();
         if (totalStock == 0) {
-            throw new IllegalArgumentException("존재하지 않는 상품입니다. 다시 입력해 주세요.");
+            throw new IllegalArgumentException(NON_EXISTENT_PRODUCT.getMessage());
         }
         if (amount > totalStock) {
-            throw new IllegalArgumentException("재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요.");
+            throw new IllegalArgumentException(EXCEEDS_STOCK.getMessage());
         }
     }
 }

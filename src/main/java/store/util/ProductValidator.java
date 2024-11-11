@@ -1,5 +1,7 @@
 package store.util;
 
+import static store.constants.ErrorMessage.INVALID_FORMAT;
+
 public class ProductValidator {
     static public void validateProduct(String name, Integer amount) {
         validateName(name);
@@ -8,13 +10,13 @@ public class ProductValidator {
 
     static private void validateName(String name) {
         if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("올바르지 않은 형식으로 입력했습니다. 다시 입력해 주세요.");
+            throw new IllegalArgumentException(INVALID_FORMAT.getMessage());
         }
     }
 
     static private void validateAmount(Integer amount) {
         if (amount == null || amount <= 0) {
-            throw new IllegalArgumentException("올바르지 않은 형식으로 입력했습니다. 다시 입력해 주세요.");
+            throw new IllegalArgumentException(INVALID_FORMAT.getMessage());
         }
     }
 }
