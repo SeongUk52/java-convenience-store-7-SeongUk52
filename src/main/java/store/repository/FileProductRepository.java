@@ -6,7 +6,6 @@ import java.util.List;
 import store.infrastructure.DataParser;
 import store.infrastructure.FileUtils;
 import store.model.Product;
-import store.util.ProductValidator;
 
 public class FileProductRepository implements ProductRepository {
     private final List<Product> products;
@@ -27,7 +26,7 @@ public class FileProductRepository implements ProductRepository {
         return products;
     }
 
-    public void saveToFile(String filePath) throws IOException, URISyntaxException {
+    public void saveToFile(String filePath) throws IOException {
         FileUtils.saveToFile(filePath, products);
     }
 }

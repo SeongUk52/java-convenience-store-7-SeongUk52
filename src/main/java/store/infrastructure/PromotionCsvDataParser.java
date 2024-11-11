@@ -1,7 +1,6 @@
 package store.infrastructure;
 
 import java.util.List;
-import store.model.Product;
 import store.model.Promotion;
 
 public class PromotionCsvDataParser implements DataParser<Promotion> {
