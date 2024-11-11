@@ -111,11 +111,11 @@
 
 ---
 - infrastructure 계층
-- repository 계층의 역할 (CRUD)
+- repository 계층의 역할 (CRUD 만)
 - DTO
 
 
-## 미흡한 점
+## 구현 중 미흡했었던 점
 
 ---
 - 파일의 쓰기를 절대경로를 기준으로 하였는데 이를 상대경로로 바꿀 수 있는 방법을 찾아야 한다.
@@ -123,3 +123,10 @@
 - 테스트 코드 미흡
 - 시간이 부족해서 TDD 를 제대로 하지 못했다.
 - ProductServiceImpl 이 너무 커졌는데 어떻게 손대야할지 감도 안 온다.
+
+
+## UML 다이어그램
+
+---
+
+![store.png](store.png)
