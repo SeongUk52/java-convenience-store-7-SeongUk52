@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import store.infrastructure.DataParser;
 import store.infrastructure.ProductCsvDataParser;
@@ -42,6 +43,7 @@ class ProductServiceImplTest {
         );
     }
 
+    @DisplayName("상품 구매")
     @Test
     void purchaseProducts() {
         productService.purchaseProducts(ProductParser.parse("[콜라-3]"), true);
@@ -55,6 +57,29 @@ class ProductServiceImplTest {
                 .findFirst()
                 .get()
                 .getQuantity()
+        );
+    }
+
+    @DisplayName("증정품이 있을 경우")
+    @Test
+    void availablePromotionCount() {
+        int availablePromotionCount = productService.getAvailablePromotionCount("오렌지주스", 1);
+
+        assertEquals(
+                1,
+                availablePromotionCount
+        );
+    }
+
+
+    @DisplayName("정가 구매")
+    @Test
+    void insufficientPromotionCount() {
+        int insufficientPromotionCount = productService.getInsufficientPromotionCount("감자칩", 10);
+
+        assertEquals(
+                6,
+                insufficientPromotionCount
         );
     }
 }
