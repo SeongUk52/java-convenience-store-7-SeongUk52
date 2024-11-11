@@ -10,7 +10,7 @@ public enum ErrorMessage {
     private final String message;
 
     ErrorMessage(String message) {
-        this.message = message;
+        this.message = "[ERROR] " + message;
     }
 
     public String getMessage() {
