@@ -92,14 +92,16 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private int calculatePromotionCount(Product product, int currentCount) {
-        validateSufficientTotalStock(product.getName(), currentCount);
         Promotion promotion = promotionService.findPromotion(product.getPromotion());
-        if (!isPromotionValid(promotion)) {
+        if (promotion == null || !isPromotionValid(promotion)) {
             return 0;
         }
-        int threshold = promotion.getThreshold();
-        if (isEligibleForPromotion(currentCount, threshold, promotion) &&
-                hasSufficientStock(product, currentCount, promotion)) {
+
+        return getPromotionCountIfEligible(product, currentCount, promotion);
+    }
+
+    private int getPromotionCountIfEligible(Product product, int currentCount, Promotion promotion) {
+        if (currentCount >= promotion.getThreshold() && hasSufficientStock(product, currentCount, promotion)) {
             return promotion.getGet();
         }
         return 0;
@@ -107,10 +109,6 @@ public class ProductServiceImpl implements ProductService {
 
     private boolean isPromotionValid(Promotion promotion) {
         return promotion.isValid(DateTimes.now().toLocalDate());
-    }
-
-    private boolean isEligibleForPromotion(int currentCount, int threshold, Promotion promotion) {
-        return currentCount % threshold == promotion.getBuy();
     }
 
     private boolean hasSufficientStock(Product product, int currentCount, Promotion promotion) {
