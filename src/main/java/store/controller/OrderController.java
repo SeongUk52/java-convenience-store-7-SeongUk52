@@ -65,15 +65,11 @@ public class OrderController {
     }
 
     private Map<String, Integer> getValidProducts() {
-        Map<String, Integer> products = null;
-        boolean retry = true;
-        while (retry) {
+        Map<String, Integer> products;
+        while (true) {
             try {
-                products = ProductParser.parse(inputView.requestPurchaseInput());
-                checkForDuplicates(products);
-                validateProducts(products);
-                products = applyPromotions(products);
-                retry = false;
+                products = validateAndApplyPromotions();
+                break;
             } catch (IllegalArgumentException e) {
                 outputView.printErrorMessage(e.getMessage());
             }
@@ -81,15 +77,26 @@ public class OrderController {
         return products;
     }
 
+    private Map<String, Integer> validateAndApplyPromotions() {
+        Map<String, Integer> products = parseProducts();
+        checkForDuplicates(products);
+        validateParsedProducts(products);
+        return applyPromotions(products);
+    }
+
+    private Map<String, Integer> parseProducts() {
+        return ProductParser.parse(inputView.requestPurchaseInput());
+    }
+
+    private void validateParsedProducts(Map<String, Integer> products) {
+        products.forEach(ProductValidator::validateProduct);
+    }
+
     private void checkForDuplicates(Map<String, Integer> products) {
         Set<String> duplicateKeys = findDuplicateKeys(products.keySet());
         if (!duplicateKeys.isEmpty()) {
             throw new IllegalArgumentException(INVALID_FORMAT.getMessage());
         }
-    }
-
-    private void validateProducts(Map<String, Integer> products) {
-        products.forEach(ProductValidator::validateProduct);
     }
 
     private Set<String> findDuplicateKeys(Set<String> keys) {
