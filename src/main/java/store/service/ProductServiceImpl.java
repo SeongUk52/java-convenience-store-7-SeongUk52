@@ -69,10 +69,19 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public int getInsufficientPromotionCount(String productName, int currentCount) {
         validateSufficientTotalStock(productName, currentCount);
-        if (productRepository.findByName(productName).stream()
-                .noneMatch(Product::hasPromotion)) {
+        if (noPromotionAvailableForProduct(productName)) {
             return 0;
         }
+        return calculateInsufficientPromotionCount(productName, currentCount);
+    }
+
+    private boolean noPromotionAvailableForProduct(String productName) {
+        return productRepository.findByName(productName)
+                .stream()
+                .noneMatch(Product::hasPromotion);
+    }
+
+    private int calculateInsufficientPromotionCount(String productName, int currentCount) {
         int sufficientPromotionCount = productRepository.findByName(productName)
                 .stream()
                 .filter(Product::hasPromotion)
@@ -135,21 +144,13 @@ public class ProductServiceImpl implements ProductService {
 
     private PriceDetails purchaseProduct(String name, int amount, boolean isMembership) {
         Map<Boolean, List<Product>> partitionedProducts = partitionProductsByPromotion(name);
-        int promotionConsumption = 0;
-        int regularConsumption;
-
-        if (!partitionedProducts.get(true).isEmpty()) {
-            promotionConsumption = calculatePromotionConsumption(partitionedProducts.get(true), amount);
-        }
-        regularConsumption = calculateRegularConsumption(partitionedProducts.get(false), amount - promotionConsumption);
+        int promotionConsumption = calculatePromotionConsumption(partitionedProducts.get(true), amount);
+        int regularConsumption = calculateRegularConsumption(partitionedProducts.get(false), amount - promotionConsumption);
 
         int price = getPriceFromName(name);
         PurchaseSummary purchaseSummary = new PurchaseSummary(promotionConsumption, regularConsumption, price);
 
-        Promotion promotion = null;
-        if (!partitionedProducts.get(true).isEmpty()) {
-            promotion = promotionService.findPromotion(partitionedProducts.get(true).get(0).getPromotion());
-        }
+        Promotion promotion = getPromotionFromProducts(partitionedProducts);
 
         return priceCalculatorService.calculatePrice(purchaseSummary, promotion, isMembership);
     }
@@ -184,16 +185,28 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private void validateSufficientTotalStock(String productName, int amount) {
-        int totalStock = productRepository.findByName(productName)
-                .stream()
-                .map(Product::getQuantity)
-                .mapToInt(Integer::intValue)
-                .sum();
+        int totalStock = calculateTotalStockForProduct(productName);
         if (totalStock == 0) {
             throw new IllegalArgumentException(NON_EXISTENT_PRODUCT.getMessage());
         }
         if (amount > totalStock) {
             throw new IllegalArgumentException(EXCEEDS_STOCK.getMessage());
+        }
+    }
+
+    private int calculateTotalStockForProduct(String productName) {
+        return productRepository.findByName(productName)
+                .stream()
+                .map(Product::getQuantity)
+                .mapToInt(Integer::intValue)
+                .sum();
+    }
+
+    private Promotion getPromotionFromProducts(Map<Boolean, List<Product>> partitionedProducts) {
+        if (partitionedProducts.get(true).isEmpty()) {
+            return null;
+        } else {
+            return promotionService.findPromotion(partitionedProducts.get(true).get(0).getPromotion());
         }
     }
 }
