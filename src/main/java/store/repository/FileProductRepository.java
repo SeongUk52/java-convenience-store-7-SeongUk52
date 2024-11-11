@@ -6,6 +6,7 @@ import java.util.List;
 import store.infrastructure.DataParser;
 import store.infrastructure.FileUtils;
 import store.model.Product;
+import store.util.ProductValidator;
 
 public class FileProductRepository implements ProductRepository {
     private final List<Product> products;

@@ -8,6 +8,7 @@ import java.util.Map;
 import store.model.PriceDetails;
 import store.service.ProductService;
 import store.util.ProductParser;
+import store.util.ProductValidator;
 import store.util.ReceiptFormatterUtil;
 import store.view.InputView;
 import store.view.OutputView;
@@ -32,6 +33,7 @@ public class OrderController {
             while (retry) {
                 try {
                     Map<String, Integer> products = ProductParser.parse(inputView.requestPurchaseInput());
+                    products.forEach(ProductValidator::validateProduct);
                     products.forEach((productName, amount) -> {
                         int updatedAmount = handlePromotion(productName, amount);
                         products.put(productName, updatedAmount);
@@ -48,11 +50,13 @@ public class OrderController {
             outputView.printReceipt(receipt);
             isContinue = inputView.isContinue();
         }
+        /*
         try {
             productService.saveAll("src/main/resources/products.md");
         } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
+         */
     }
 
     private void displayProductList() {
