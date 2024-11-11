@@ -6,6 +6,9 @@ import store.model.PromotionBenefit;
 import store.model.PurchaseSummary;
 
 public class PriceCalculatorServiceImpl implements PriceCalculatorService {
+    private static final double MEMBERSHIP_DISCOUNT_RATE = 0.3;
+    private static final int MAX_MEMBERSHIP_DISCOUNT = 8_000;
+
     @Override
     public PriceDetails calculatePrice(PurchaseSummary purchaseSummary, Promotion promotion, boolean isMembership) {
         int membershipDiscount = 0;
@@ -47,7 +50,7 @@ public class PriceCalculatorServiceImpl implements PriceCalculatorService {
     private int calculateMembershipDiscount(PurchaseSummary purchaseSummary, PromotionBenefit promotionBenefit) {
         int excludedItems = purchaseSummary.regularConsumption() + purchaseSummary.promotionConsumption()
                 - promotionBenefit.totalItems();
-        int discountAmount = (int) (purchaseSummary.price() * excludedItems * 0.3);
-        return Math.min(discountAmount, 8_000);
+        int discountAmount = (int) (purchaseSummary.price() * excludedItems * MEMBERSHIP_DISCOUNT_RATE);
+        return Math.min(discountAmount, MAX_MEMBERSHIP_DISCOUNT);
     }
 }
