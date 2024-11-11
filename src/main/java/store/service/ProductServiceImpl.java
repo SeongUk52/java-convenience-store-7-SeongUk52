@@ -58,28 +58,27 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public int getAvailablePromotionCount(String productName, int currentCount) {
         validateSufficientTotalStock(productName, currentCount);
-        return productRepository.findByName(productName)
-                .stream()
-                .filter(Product::hasPromotion)
-                .findFirst()
-                .map(product -> calculatePromotionCount(product, currentCount))
-                .orElse(0);
+        return getPromotionCountForProduct(productName, currentCount, false);
     }
 
     @Override
     public int getInsufficientPromotionCount(String productName, int currentCount) {
         validateSufficientTotalStock(productName, currentCount);
-        if (productRepository.findByName(productName).stream()
-                .noneMatch(Product::hasPromotion)) {
-            return 0;
-        }
-        int sufficientPromotionCount = productRepository.findByName(productName)
+        return getPromotionCountForProduct(productName, currentCount, true);
+    }
+
+    private int getPromotionCountForProduct(String productName, int currentCount, boolean isInsufficient) {
+        return productRepository.findByName(productName)
                 .stream()
                 .filter(Product::hasPromotion)
                 .findFirst()
-                .map(product -> calculateSufficientPromotionCount(product, currentCount))
+                .map(product -> {
+                    if (isInsufficient) {
+                        return calculateSufficientPromotionCount(product, currentCount);
+                    }
+                    return calculatePromotionCount(product, currentCount);
+                })
                 .orElse(0);
-        return currentCount - sufficientPromotionCount;
     }
 
     private int calculatePromotionCount(Product product, int currentCount) {
@@ -135,21 +134,13 @@ public class ProductServiceImpl implements ProductService {
 
     private PriceDetails purchaseProduct(String name, int amount, boolean isMembership) {
         Map<Boolean, List<Product>> partitionedProducts = partitionProductsByPromotion(name);
-        int promotionConsumption = 0;
-        int regularConsumption;
-
-        if (!partitionedProducts.get(true).isEmpty()) {
-            promotionConsumption = calculatePromotionConsumption(partitionedProducts.get(true), amount);
-        }
-        regularConsumption = calculateRegularConsumption(partitionedProducts.get(false), amount - promotionConsumption);
+        int promotionConsumption = calculatePromotionConsumption(partitionedProducts.get(true), amount);
+        int regularConsumption = calculateRegularConsumption(partitionedProducts.get(false), amount - promotionConsumption);
 
         int price = getPriceFromName(name);
         PurchaseSummary purchaseSummary = new PurchaseSummary(promotionConsumption, regularConsumption, price);
 
-        Promotion promotion = null;
-        if (!partitionedProducts.get(true).isEmpty()) {
-            promotion = promotionService.findPromotion(partitionedProducts.get(true).get(0).getPromotion());
-        }
+        Promotion promotion = getPromotionForProduct(partitionedProducts.get(true));
 
         return priceCalculatorService.calculatePrice(purchaseSummary, promotion, isMembership);
     }
@@ -165,6 +156,13 @@ public class ProductServiceImpl implements ProductService {
                 .findFirst()
                 .map(Product::getPrice)
                 .orElseThrow(() -> new IllegalArgumentException(NON_EXISTENT_PRODUCT.getMessage()));
+    }
+
+    private Promotion getPromotionForProduct(List<Product> promotionProducts) {
+        if (promotionProducts.isEmpty()) {
+            return null;
+        }
+        return promotionService.findPromotion(promotionProducts.get(0).getPromotion());
     }
 
     private int calculatePromotionConsumption(List<Product> promotionProducts, int amount) {
@@ -184,16 +182,29 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private void validateSufficientTotalStock(String productName, int amount) {
-        int totalStock = productRepository.findByName(productName)
+        validateProductExistence(productName);
+        validateStockExceedance(productName, amount);
+    }
+
+    private void validateProductExistence(String productName) {
+        int totalStock = getTotalStockForProduct(productName);
+        if (totalStock == 0) {
+            throw new IllegalArgumentException(NON_EXISTENT_PRODUCT.getMessage());
+        }
+    }
+
+    private void validateStockExceedance(String productName, int amount) {
+        int totalStock = getTotalStockForProduct(productName);
+        if (amount > totalStock) {
+            throw new IllegalArgumentException(EXCEEDS_STOCK.getMessage());
+        }
+    }
+
+    private int getTotalStockForProduct(String productName) {
+        return productRepository.findByName(productName)
                 .stream()
                 .map(Product::getQuantity)
                 .mapToInt(Integer::intValue)
                 .sum();
-        if (totalStock == 0) {
-            throw new IllegalArgumentException(NON_EXISTENT_PRODUCT.getMessage());
-        }
-        if (amount > totalStock) {
-            throw new IllegalArgumentException(EXCEEDS_STOCK.getMessage());
-        }
     }
 }
