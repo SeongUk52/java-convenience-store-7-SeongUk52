@@ -23,7 +23,7 @@ public class ReceiptFormatterUtil {
         List<String> productList = new ArrayList<>();
         productList.add("상품명\t\t수량\t금액");
         productDetailsMap.forEach((name, details) ->
-            productList.add(String.format("%s\t\t%d\t%,d", name, details.totalCount(), details.totalPrice()))
+            productList.add(String.format("%s\t\t%,d\t%,d", name, details.totalCount(), details.totalPrice()))
         );
         return productList;
     }
@@ -33,7 +33,7 @@ public class ReceiptFormatterUtil {
         promoSection.add("=============증\t정==============");
         productDetailsMap.forEach((name, details) -> {
             if (details.promotionCount() > 0) {
-                promoSection.add(String.format("%s\t\t%d", name, details.promotionCount()));
+                promoSection.add(String.format("%s\t\t%,d", name, details.promotionCount()));
             }
         });
         return promoSection;
@@ -48,9 +48,9 @@ public class ReceiptFormatterUtil {
         int membershipDiscount = productDetailsMap.values().stream().mapToInt(PriceDetails::membershipDiscount).sum();
         int finalPrice = productDetailsMap.values().stream().mapToInt(PriceDetails::finalPrice).sum();
 
-        summary.add(String.format("총구매액\t\t%d\t%,d", totalPurchase, totalPurchase));
-        summary.add(String.format("행사할인\t\t\t-%d", promoDiscount));
-        summary.add(String.format("멤버십할인\t\t\t-%d", membershipDiscount));
+        summary.add(String.format("총구매액\t\t%,d\t%,d", totalPurchase, totalPurchase));
+        summary.add(String.format("행사할인\t\t\t-%,d", promoDiscount));
+        summary.add(String.format("멤버십할인\t\t\t-%,d", membershipDiscount));
         summary.add(String.format("내실돈\t\t\t %,d", finalPrice));
 
         return summary;
