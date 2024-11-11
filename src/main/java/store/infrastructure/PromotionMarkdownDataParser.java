@@ -3,7 +3,7 @@ package store.infrastructure;
 import java.util.List;
 import store.model.Promotion;
 
-public class PromotionCsvDataParser implements DataParser<Promotion> {
+public class PromotionMarkdownDataParser implements DataParser<Promotion> {
     @Override
     public Promotion parseLine(String line) {
         List<String> fields = List.of(line.split(","));

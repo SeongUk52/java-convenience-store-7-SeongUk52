@@ -8,8 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import store.infrastructure.DataParser;
-import store.infrastructure.ProductCsvDataParser;
-import store.infrastructure.PromotionCsvDataParser;
+import store.infrastructure.ProductMarkdownDataParser;
+import store.infrastructure.PromotionMarkdownDataParser;
 import store.model.Product;
 import store.model.Promotion;
 import store.repository.FileProductRepository;
@@ -24,12 +24,12 @@ class ProductServiceImplTest {
 
     @BeforeEach
     void setUp() throws IOException, URISyntaxException {
-        DataParser<Promotion> promotionDataParser = new PromotionCsvDataParser();
+        DataParser<Promotion> promotionDataParser = new PromotionMarkdownDataParser();
         PromotionRepository promotionRepository = new FilePromotionRepository(
                 "promotions_test.md",
                 promotionDataParser
         );
-        DataParser<Product> productDataParser = new ProductCsvDataParser();
+        DataParser<Product> productDataParser = new ProductMarkdownDataParser();
         productRepository = new FileProductRepository(
                 "products_test.md",
                 productDataParser

@@ -1,7 +1,7 @@
 package store.config;
 
 import store.infrastructure.DataParser;
-import store.infrastructure.ProductCsvDataParser;
+import store.infrastructure.ProductMarkdownDataParser;
 import store.model.Product;
 import store.repository.FileProductRepository;
 import store.repository.ProductRepository;
@@ -12,7 +12,7 @@ public class ProductConfig {
 
     private ProductConfig() {
         try {
-            DataParser<Product> productCsvDataParser = new ProductCsvDataParser();
+            DataParser<Product> productCsvDataParser = new ProductMarkdownDataParser();
             productRepository = new FileProductRepository("products.md", productCsvDataParser);
         } catch (Exception e) {
             throw new RuntimeException(e);

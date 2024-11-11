@@ -1,6 +1,6 @@
 package store.config;
 
-import store.infrastructure.PromotionCsvDataParser;
+import store.infrastructure.PromotionMarkdownDataParser;
 import store.model.Promotion;
 import store.repository.FilePromotionRepository;
 import store.repository.PromotionRepository;
@@ -12,7 +12,7 @@ public class PromotionConfig {
 
     private PromotionConfig() {
         try {
-            DataParser<Promotion> promotionCsvDataParser = new PromotionCsvDataParser();
+            DataParser<Promotion> promotionCsvDataParser = new PromotionMarkdownDataParser();
             promotionRepository = new FilePromotionRepository("promotions.md", promotionCsvDataParser);
         } catch (Exception e) {
             throw new RuntimeException(e);

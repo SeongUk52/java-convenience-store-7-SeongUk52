@@ -3,7 +3,7 @@ package store.infrastructure;
 import java.util.List;
 import store.model.Product;
 
-public class ProductCsvDataParser implements DataParser<Product> {
+public class ProductMarkdownDataParser implements DataParser<Product> {
     @Override
     public Product parseLine(String line) {
         List<String> fields = List.of(line.split(","));

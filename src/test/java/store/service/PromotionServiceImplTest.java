@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import store.infrastructure.DataParser;
-import store.infrastructure.PromotionCsvDataParser;
+import store.infrastructure.PromotionMarkdownDataParser;
 import store.model.Product;
 import store.model.Promotion;
 import store.repository.FilePromotionRepository;
@@ -19,7 +19,7 @@ class PromotionServiceImplTest {
     @DisplayName("프로모션 기간 체크")
     @Test
     void isPromotionActiveForProduct() throws IOException, URISyntaxException {
-        DataParser<Promotion> promotionDataParser = new PromotionCsvDataParser();
+        DataParser<Promotion> promotionDataParser = new PromotionMarkdownDataParser();
         PromotionRepository promotionRepository = new FilePromotionRepository(
                 "promotions_test.md",
                 promotionDataParser
