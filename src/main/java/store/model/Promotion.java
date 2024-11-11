@@ -3,11 +3,11 @@ package store.model;
 import java.time.LocalDate;
 
 public class Promotion {
-    private String name;
-    private int buy;
-    private int get;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private final String name;
+    private final int buy;
+    private final int get;
+    private final LocalDate startDate;
+    private final LocalDate endDate;
 
     public Promotion(String name, int buy, int get, String startDate, String endDate) {
         this.name = name;
@@ -26,8 +26,9 @@ public class Promotion {
     }
 
     public PromotionBenefit getBenefit(int promotionConsumption) {
-        int cycles = promotionConsumption / (buy + get);
-        return new PromotionBenefit(cycles * (buy + get),cycles * get);
+        int totalItems = buy + get;
+        int cycles = promotionConsumption / totalItems;
+        return new PromotionBenefit(cycles * totalItems, cycles * get);
     }
 
     public String getName() {
