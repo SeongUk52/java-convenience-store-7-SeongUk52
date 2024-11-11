@@ -100,8 +100,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private int getPromotionCountIfEligible(Product product, int currentCount, Promotion promotion) {
-        if (currentCount >= promotion.getThreshold() && hasSufficientStock(product, currentCount, promotion)) {
-            return promotion.getGet();
+        if ((currentCount % promotion.getThreshold()) >= promotion.getBuy() &&
+                hasSufficientStock(product, currentCount, promotion)) {
+            return promotion.getThreshold() - (currentCount % promotion.getThreshold());
         }
         return 0;
     }
