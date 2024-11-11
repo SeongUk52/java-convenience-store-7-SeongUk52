@@ -12,7 +12,6 @@ import store.service.PromotionServiceImpl;
 
 public class ServiceConfig {
     private static final ServiceConfig instance = new ServiceConfig();
-
     private ProductService productService;
     private PromotionService promotionService;
     private PriceCalculatorService priceCalculatorService;

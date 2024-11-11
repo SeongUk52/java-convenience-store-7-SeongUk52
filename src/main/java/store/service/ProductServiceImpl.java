@@ -5,7 +5,6 @@ import static store.constants.ErrorMessage.NON_EXISTENT_PRODUCT;
 
 import camp.nextstep.edu.missionutils.DateTimes;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +50,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void saveAll(String filePath) throws IOException, URISyntaxException {
+    public void saveAll(String filePath) throws IOException {
         productRepository.saveToFile(filePath);
     }
 
@@ -143,8 +142,8 @@ public class ProductServiceImpl implements ProductService {
     private PriceDetails purchaseProduct(String name, int amount, boolean isMembership) {
         Map<Boolean, List<Product>> partitionedProducts = partitionProductsByPromotion(name);
         int promotionConsumption = calculatePromotionConsumption(partitionedProducts.get(true), amount);
-        int regularConsumption = calculateRegularConsumption(partitionedProducts.get(false), amount - promotionConsumption);
-
+        int regularConsumption = calculateRegularConsumption(partitionedProducts.get(false),
+                amount - promotionConsumption);
         int price = getPriceFromName(name);
         PurchaseSummary purchaseSummary = new PurchaseSummary(promotionConsumption, regularConsumption, price);
         Promotion promotion = getPromotionFromProducts(partitionedProducts);
