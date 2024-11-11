@@ -147,9 +147,7 @@ public class ProductServiceImpl implements ProductService {
 
         int price = getPriceFromName(name);
         PurchaseSummary purchaseSummary = new PurchaseSummary(promotionConsumption, regularConsumption, price);
-
         Promotion promotion = getPromotionFromProducts(partitionedProducts);
-
         return priceCalculatorService.calculatePrice(purchaseSummary, promotion, isMembership);
     }
 

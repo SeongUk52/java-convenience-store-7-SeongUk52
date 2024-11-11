@@ -1,10 +1,14 @@
 package store.controller;
 
+import static store.constants.ErrorMessage.INVALID_FORMAT;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import store.model.PriceDetails;
 import store.service.ProductService;
 import store.util.ProductParser;
@@ -66,7 +70,8 @@ public class OrderController {
         while (retry) {
             try {
                 products = ProductParser.parse(inputView.requestPurchaseInput());
-                products.forEach(ProductValidator::validateProduct);
+                checkForDuplicates(products);
+                validateProducts(products);
                 products = applyPromotions(products);
                 retry = false;
             } catch (IllegalArgumentException e) {
@@ -74,6 +79,28 @@ public class OrderController {
             }
         }
         return products;
+    }
+
+    private void checkForDuplicates(Map<String, Integer> products) {
+        Set<String> duplicateKeys = findDuplicateKeys(products.keySet());
+        if (!duplicateKeys.isEmpty()) {
+            throw new IllegalArgumentException(INVALID_FORMAT.getMessage());
+        }
+    }
+
+    private void validateProducts(Map<String, Integer> products) {
+        products.forEach(ProductValidator::validateProduct);
+    }
+
+    private Set<String> findDuplicateKeys(Set<String> keys) {
+        Set<String> seen = new HashSet<>();
+        Set<String> duplicates = new HashSet<>();
+        for (String key : keys) {
+            if (!seen.add(key)) {
+                duplicates.add(key);
+            }
+        }
+        return duplicates;
     }
 
     private Map<String, Integer> applyPromotions(Map<String, Integer> products) {
