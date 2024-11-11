@@ -140,7 +140,9 @@ public class OrderController {
 
     private int applyRegularPricePromotion(String productName, int amount) {
         int insufficientPromotionCount = productService.getInsufficientPromotionCount(productName, amount);
-        if (insufficientPromotionCount > 0 && !inputView.askForRegularPrice(productName, insufficientPromotionCount)) {
+        System.out.println(insufficientPromotionCount);
+        if (insufficientPromotionCount != amount && insufficientPromotionCount > 0
+                && !inputView.askForRegularPrice(productName, insufficientPromotionCount)) {
             return amount - insufficientPromotionCount;
         }
         return amount;

@@ -125,7 +125,7 @@ public class ProductServiceImpl implements ProductService {
     private int calculateSufficientPromotionCount(Product product, int currentCount) {
         Promotion promotion = promotionService.findPromotion(product.getPromotion());
         if (product.getQuantity() >= currentCount) {
-            return currentCount;
+            return currentCount - (currentCount % promotion.getThreshold());
         }
         return product.getQuantity() - (product.getQuantity() % promotion.getThreshold());
     }
