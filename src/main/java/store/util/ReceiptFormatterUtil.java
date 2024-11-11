@@ -43,16 +43,31 @@ public class ReceiptFormatterUtil {
         List<String> summary = new ArrayList<>();
         summary.add("====================================");
 
-        int totalPurchase = productDetailsMap.values().stream().mapToInt(PriceDetails::totalPrice).sum();
-        int promoDiscount = productDetailsMap.values().stream().mapToInt(PriceDetails::promotionDiscount).sum();
-        int membershipDiscount = productDetailsMap.values().stream().mapToInt(PriceDetails::membershipDiscount).sum();
-        int finalPrice = productDetailsMap.values().stream().mapToInt(PriceDetails::finalPrice).sum();
-
-        summary.add(String.format("총구매액\t\t%,d\t%,d", totalPurchase, totalPurchase));
-        summary.add(String.format("행사할인\t\t\t-%,d", promoDiscount));
-        summary.add(String.format("멤버십할인\t\t\t-%,d", membershipDiscount));
-        summary.add(String.format("내실돈\t\t\t %,d", finalPrice));
+        summary.add(formatTotalPurchase(productDetailsMap));
+        summary.add(formatPromoDiscount(productDetailsMap));
+        summary.add(formatMembershipDiscount(productDetailsMap));
+        summary.add(formatFinalPrice(productDetailsMap));
 
         return summary;
+    }
+
+    private static String formatTotalPurchase(Map<String, PriceDetails> productDetailsMap) {
+        int totalPurchase = productDetailsMap.values().stream().mapToInt(PriceDetails::totalPrice).sum();
+        return String.format("총구매액\t\t%,d\t%,d", totalPurchase, totalPurchase);
+    }
+
+    private static String formatPromoDiscount(Map<String, PriceDetails> productDetailsMap) {
+        int promoDiscount = productDetailsMap.values().stream().mapToInt(PriceDetails::promotionDiscount).sum();
+        return String.format("행사할인\t\t\t-%,d", promoDiscount);
+    }
+
+    private static String formatMembershipDiscount(Map<String, PriceDetails> productDetailsMap) {
+        int membershipDiscount = productDetailsMap.values().stream().mapToInt(PriceDetails::membershipDiscount).sum();
+        return String.format("멤버십할인\t\t\t-%,d", membershipDiscount);
+    }
+
+    private static String formatFinalPrice(Map<String, PriceDetails> productDetailsMap) {
+        int finalPrice = productDetailsMap.values().stream().mapToInt(PriceDetails::finalPrice).sum();
+        return String.format("내실돈\t\t\t %,d", finalPrice);
     }
 }
